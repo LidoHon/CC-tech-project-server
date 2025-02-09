@@ -31,6 +31,11 @@ type LoginRequest struct {
 	} `json:"input"`
 }
 
+type GetUserByIdInput struct{
+	Input struct{
+		UserID int `json:"id" validate:"required"`
+	}
+}
 type PasswordResetRequest struct {
 	Input struct {
 		Email string `json:"email" validate:"required,email"`

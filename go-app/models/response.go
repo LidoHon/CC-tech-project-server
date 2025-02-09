@@ -44,7 +44,7 @@ type UpdatePasswordResponse struct {
 }
 
 type UpdateResponce struct {
-	Message graphql.String `json:"message"`
+	Message string `json:"message"`
 }
 
 type DeleteResponse struct {

@@ -20,9 +20,9 @@ import (
 
 var store *sessions.CookieStore
 
-// @title DevConnect API
+// @title User API fro cc tech project
 // @version 1.0
-// @description This is the API documentation for DevConnect.
+// @description This is the API documentation for user api.
 // @termsOfService http://swagger.io/terms/
 // @contact.name API Support
 // @contact.email support@devconnect.com

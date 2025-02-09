@@ -24,7 +24,7 @@ var validate = validator.New()
 // RegisterUser godoc
 // @Summary Register a new user
 // @Description Register a new user with the provided details
-// @Tags users
+// @Tags users Registration
 // @Accept json
 // @Produce json
 // @Param input body requests.RegisterRequest true "User registration details"
@@ -236,7 +236,7 @@ func RegisterUser() gin.HandlerFunc {
 // VerifyEmail godoc
 // @Summary Verify user email
 // @Description Verifies a user's email by checking the verification token and updating the user's status.
-// @Tags Authentication
+// @Tags User Verification
 // @Accept json
 // @Produce json
 // @Param request body requests.EmailVerifyRequest true "User email verification request"
@@ -346,8 +346,19 @@ func VerifyEmail() gin.HandlerFunc {
 	}
 }
 
-// login user
 
+// Login handles user authentication
+// @Summary User login
+// @Description Authenticates a user with email and password, returning access and refresh tokens
+// @Tags User Login
+// @Accept json
+// @Produce json
+// @Param request body requests.LoginRequest true "Login request body"
+// @Success 200 {object} models.LoginResponse
+// @Failure 400 {object} gin.H "Invalid input or bad request"
+// @Failure 401 {object} gin.H "Invalid credentials or unverified email"
+// @Failure 500 {object} gin.H "Failed to query user or generate tokens"
+// @Router /users/login [post]
 func Login() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		client := libs.SetupGraphqlClient()
@@ -423,6 +434,18 @@ func Login() gin.HandlerFunc {
 	}
 }
 
+// ResetPassword  request godoc
+// @Summary sending Reset password request
+// @Description Send a password reset token to the user's email address if they have a verified email.
+// @Tags Password Reset Request
+// @Accept json
+// @Produce json
+// @Param request body requests.PasswordResetRequest true "Password Reset Request"
+// @Success 200 {object} models.ResetRequestOutput "Password reset request success"
+// @Failure 400 {object} gin.H "Invalid input"
+// @Failure 401 {object} gin.H "Unauthorized - Invalid credentials or unverified email"
+// @Failure 500 {object} gin.H "Internal server error"
+// @Router /users/reset-password [post]
 func ResetPassword() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		client := libs.SetupGraphqlClient()
@@ -544,6 +567,18 @@ func ResetPassword() gin.HandlerFunc {
 	}
 }
 
+// Reset Password godoc
+// @Summary Reset password
+// @Description Send a password reset token to the user's email address if they have a verified email.
+// @Tags Reset Password
+// @Accept json
+// @Produce json
+// @Param request body requests.UpdatePasswordRequest true "Password Reset Request"
+// @Success 200 {object} models.UpdatePasswordResponse "Password reset request success"
+// @Failure 400 {object} gin.H "Invalid input"
+// @Failure 401 {object} gin.H "Unauthorized - Invalid credentials or unverified email"
+// @Failure 500 {object} gin.H "Internal server error"
+// @Router /users/update-password [post]
 func UpdatePassword() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		client := libs.SetupGraphqlClient()
@@ -684,6 +719,17 @@ func DeleteUser() gin.HandlerFunc {
 	}
 }
 
+// @Summary Update User Profile
+// @Description Updates a user's profile information.
+// @Tags User
+// @Accept json
+// @Produce json
+// @Param UpdateRequest body requests.UpdateRequest true "User profile update request"
+// @Success 200 {object} gin.H { "message": "Profile updated successfully" }
+// @Failure 400 {object} gin.H { "message": "invalid input", "details": "Error details" }
+// @Failure 422 {object} gin.H { "updateProfile": "Validation error details" }
+// @Failure 500 {object} gin.H { "message": "Failed to update user profile", "details": "Error details" }
+// @Router /profile/update [put]
 func UpdateProfile() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		client := libs.SetupGraphqlClient()
@@ -803,7 +849,7 @@ func UpdateProfile() gin.HandlerFunc {
 
 }
 
-func DeleteUserByEmail() gin.HandlerFunc {
+func DeleteUserById() gin.HandlerFunc {
 	return func(c *gin.Context) {
 
 		client := libs.SetupGraphqlClient()
@@ -932,5 +978,58 @@ func UpdateProfilePicture() gin.HandlerFunc {
 			Message: "Profile picture updated successfully",
 		}
 		c.JSON(http.StatusOK, res)
+	}
+}
+
+func GetAllUsers() gin.HandlerFunc{
+	return func(c *gin.Context) {
+		client := libs.SetupGraphqlClient()
+
+		var query struct {
+			Users []struct {
+				ID       graphql.Int    `graphql:"id"`
+				UserName graphql.String `graphql:"username"`
+				Email    graphql.String `graphql:"email"`
+			} `graphql:"users"`
+		}
+
+		if err := client.Query(context.Background(), &query, nil); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"message": "Failed to query user data", "details": err.Error()})
+			return
+		}
+
+		c.JSON(http.StatusOK, query.Users)
+	}	
+}
+
+
+func GetUserById() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		client := libs.SetupGraphqlClient()
+
+		var req requests.GetUserByIdInput
+		if err := c.ShouldBindBodyWithJSON(&req); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid input", "details": err.Error()})
+			return
+		}
+
+		var query struct {
+			User struct {
+				ID       graphql.Int    `graphql:"id"`
+				UserName graphql.String `graphql:"username"`
+				Email    graphql.String `graphql:"email"`
+			} `graphql:"users_by_pk(id: $id)"`
+		}
+
+		queryVars := map[string]interface{}{
+			"id": graphql.Int(req.Input.UserID),
+		}
+
+		if err := client.Query(context.Background(), &query, queryVars); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"message": "Failed to query user data", "details": err.Error()})
+			return
+		}
+
+		c.JSON(http.StatusOK, query.User)
 	}
 }
