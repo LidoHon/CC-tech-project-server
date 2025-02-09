@@ -1,0 +1,113 @@
+type Query {
+  login(
+    email: String!
+    password: String!
+  ): LoginResponce
+}
+
+type Mutation {
+  passwordReset(
+    token: String!
+    userId: Int!
+    password: String!
+  ): ResetedPasswordOutput!
+}
+
+type Mutation {
+  passwordResetRequest(
+    email: String!
+  ): ResetRequestOutput!
+}
+
+type Mutation {
+  signup(
+    userName: String!
+    email: String!
+    phone: String!
+    password: String!
+    role: String
+    image: ImageInfo
+  ): SignedUpUserOutput!
+}
+
+type Mutation {
+  updateProfile(
+    userName: String!
+    phone: String!
+    userId: Int!
+    role: String
+    image: ImageInfo
+  ): UpdateResponce!
+}
+
+type Mutation {
+  updateProfilePicture(
+    userId: Int!
+    image: ImageInfo
+  ): UpdateProfileResponce!
+}
+
+type Mutation {
+  verifyEmail(
+    verification_token: String!
+    user_id: Int!
+  ): ResetedPasswordOutput!
+}
+
+type Mutation {
+  verifyPayment(
+    tx_ref: String!
+    id: Int!
+  ): ProcessPaymentOutput!
+}
+
+input ImageInfo {
+  name: String
+  type: String
+  base64String: String
+}
+
+type SignedUpUserOutput {
+  id: Int!
+  userName: String!
+  email: String!
+  token: String!
+  role: String!
+  refreshToken: String!
+}
+
+type LoginResponce {
+  user: User
+}
+
+type User {
+  id: Int!
+  name: String!
+  email: String!
+  token: String!
+  role: String!
+  refreshToken: String!
+}
+
+type ResetedPasswordOutput {
+  message: String!
+}
+
+type UpdateResponce {
+  message: String!
+}
+
+type ResetRequestOutput {
+  id: Int!
+  message: String!
+}
+
+type ProcessPaymentOutput {
+  message: String!
+  status: String
+}
+
+type UpdateProfileResponce {
+  message: String!
+}
+

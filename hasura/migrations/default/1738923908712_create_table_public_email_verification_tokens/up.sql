@@ -1,0 +1,1 @@
+CREATE TABLE "public"."email_verification_tokens" ("id" serial NOT NULL, "token" varchar NOT NULL, "user_id" integer NOT NULL, "created_at" timestamptz NOT NULL DEFAULT now(), "expired_at" timestamptz NOT NULL DEFAULT (now() + '24:00:00'::interval), PRIMARY KEY ("id") , FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON UPDATE cascade ON DELETE cascade);

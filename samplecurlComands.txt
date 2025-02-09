@@ -1,0 +1,99 @@
+verify email
+curl -X POST http://localhost:5000/api/users/verify-email \
+-H "Content-Type: application/json" \
+-d '{
+    "input": {
+        "verification_token": "$2a$12$AsCjNxv16mVb8wMHSTXKk.Pe96BkMTXesKohttcXtL5zBVZSVzhnq",
+        "user_id": 8
+    }
+}'
+register user
+curl -X POST http://localhost:5000/api/users/register -H "Content-Type: application/json" -d '{
+  "input": {
+    "userName":"lido",        
+    "email": "liduhon3@gmail.com",
+    "password": "Pass12345",
+    "phone": "1234567890",
+    "image": null
+  }
+}'
+
+
+login
+
+curl -X POST http://localhost:5000/api/users/login \
+-H "Content-Type: application/json" \
+-d '{
+  "input": {
+    "email": "liduhon3@gmail.com",
+    "password": "newPassword"
+  }
+}'
+curl -X POST http://192.168.0.40:5000/api/users/login \
+-H "Content-Type: application/json" \
+-d '{
+  "input": {
+    "email": "liduhon3@gmail.com",
+    "password": "newPassword"
+  }
+}'
+
+
+
+reset password request
+
+curl -X POST http://localhost:5000/api/users/reset-password \
+-H "Content-Type: application/json" \
+-d '{"input": {"email": "getab2017@gmail.com"}}'
+
+
+update password
+curl -X POST http://localhost:5000/api/users/update-password \
+-H "Content-Type: application/json" \
+-d '{
+    "token": "$2a$12$JCaTenZuIhpIGoa0GRDEs.1li048Q12P80LByNW6LSX3BJsly1/HO",
+    "user_id": 29,
+    "password": "Pass12345"
+}'
+
+account removal
+curl -X POST http://localhost:5000/api/users/delete \
+-H "Content-Type: application/json" \
+-d '{
+  "event": {
+    "Op": "DELETE",
+    "Data": {
+      "Old": {
+        "Email": "liduhon3@gmail.com",
+        "UserName": "lidethon",
+        "Phone": "1234567890",
+        "Password": "newPassword"
+      }
+    }
+  }
+}'
+
+
+update profile
+curl -X POST http://localhost:5000/api/users/update-profile -H "Content-Type: application/json" -d '{
+  "userName": "lidoye",
+  "phone": "1234567890",
+  "user_id": 1
+}'
+
+
+
+
+// payment verification
+ curl -X PUT "http://localhost:5000/api/rent/payment"      -H "Content-Type: application/json"      -d '{
+       "tx_ref": "rent-93",
+       "id": 2
+     }'
+
+
+mutation paymentver {
+  ProcessPayment(id: 24, tx_ref: "rent-116") {
+    message
+    status
+  }
+}
