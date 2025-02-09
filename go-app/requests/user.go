@@ -3,7 +3,7 @@ package requests
 import (
 	"time"
 
-	"github.com/LidoHon/devConnect/models"
+	"github.com/LidoHon/CCTech/models"
 )
 
 type RegisterRequest struct {

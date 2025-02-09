@@ -9,10 +9,10 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/LidoHon/devConnect/helpers"
-	"github.com/LidoHon/devConnect/libs"
-	"github.com/LidoHon/devConnect/models"
-	"github.com/LidoHon/devConnect/requests"
+	"github.com/LidoHon/CCTech/helpers"
+	"github.com/LidoHon/CCTech/libs"
+	"github.com/LidoHon/CCTech/models"
+	"github.com/LidoHon/CCTech/requests"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"github.com/shurcooL/graphql"
@@ -20,6 +20,18 @@ import (
 
 var validate = validator.New()
 
+
+// RegisterUser godoc
+// @Summary Register a new user
+// @Description Register a new user with the provided details
+// @Tags users
+// @Accept json
+// @Produce json
+// @Param input body requests.RegisterRequest true "User registration details"
+// @Success 200 {object} models.SignedUpUserOutput
+// @Failure 400 {object} gin.H "Invalid input data"
+// @Failure 500 {object} gin.H "Internal server error"
+// @Router /users/register [post]
 func RegisterUser() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		client := libs.SetupGraphqlClient()
@@ -208,12 +220,12 @@ func RegisterUser() gin.HandlerFunc {
 		}
 
 		response := models.SignedUpUserOutput{
-			ID:           user.ID,
-			UserName:     user.Name,
-			Email:        user.Email,
-			Token:        graphql.String(token),
-			Role:         user.Role,
-			RefreshToken: graphql.String(refreshToken),
+			ID:           int(user.ID),
+			UserName:     string(user.Name),
+			Email:        string(user.Email),
+			Token:        token,
+			RefreshToken: refreshToken,
+			Role:         string(user.Role),
 		}
 		c.JSON(http.StatusOK, response)
 
@@ -221,6 +233,18 @@ func RegisterUser() gin.HandlerFunc {
 
 }
 
+// VerifyEmail godoc
+// @Summary Verify user email
+// @Description Verifies a user's email by checking the verification token and updating the user's status.
+// @Tags Authentication
+// @Accept json
+// @Produce json
+// @Param request body requests.EmailVerifyRequest true "User email verification request"
+// @Success 200 {object} models.VerifyEmailResponse "Email verified successfully"
+// @Failure 400 {object} gin.H "Invalid input data"
+// @Failure 401 {object} gin.H "Invalid or expired verification token"
+// @Failure 500 {object} gin.H "Internal server error"
+// @Router /users/verify-email [post]
 func VerifyEmail() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		client := libs.SetupGraphqlClient()
@@ -314,10 +338,8 @@ func VerifyEmail() gin.HandlerFunc {
 
 		// return success message
 
-		res := struct {
-			Msg string `json:"message"`
-		}{
-			Msg: "Your email is verified successfully!",
+		res := models.VerifyEmailResponse{
+			Message: string("Email verified successfully"),
 		}
 
 		c.JSON(http.StatusOK, res)
@@ -493,12 +515,6 @@ func ResetPassword() gin.HandlerFunc {
 		log.Printf("User %d successfully updated with tokenId %d", user.ID, UpdateUserTokenMutation.UpdatedUser.TokenID)
 
 		verificationLink := os.Getenv("RESET_PASS_URL") + "/password-reset?token=" + token + "&id=" + strconv.Itoa(int(user.ID))
-		// verificationLink := fmt.Sprintf(
-		// 	"%s/password-reset?token=%s&id=%d",
-		// 	os.Getenv("RESET_PASS_URL"), // Base URL
-		// 	token,                         // Reset token
-		// 	int(user.ID),                   // User ID
-		// )
 
 		// Send password reset email
 		emailData := helpers.EmailData{
@@ -699,7 +715,6 @@ func UpdateProfile() gin.HandlerFunc {
 			proPicUrl = ""
 		}
 
-		// Fetch existing role if not provided
 		roleToUse := req.Input.Role
 		if roleToUse == "" {
 			var query struct {

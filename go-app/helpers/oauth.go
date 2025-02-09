@@ -4,7 +4,7 @@ import (
 	"context"
 	"log"
 
-	"github.com/LidoHon/devConnect/libs"
+	"github.com/LidoHon/CCTech/libs"
 	"github.com/shurcooL/graphql"
 )
 

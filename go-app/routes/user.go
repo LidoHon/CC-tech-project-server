@@ -8,9 +8,9 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/LidoHon/devConnect/controllers"
-	"github.com/LidoHon/devConnect/helpers"
-	"github.com/LidoHon/devConnect/middlewares"
+	"github.com/LidoHon/CCTech/controllers"
+	"github.com/LidoHon/CCTech/helpers"
+	"github.com/LidoHon/CCTech/middlewares"
 
 	// "github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"

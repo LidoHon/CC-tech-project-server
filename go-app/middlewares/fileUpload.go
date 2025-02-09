@@ -9,8 +9,8 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/LidoHon/devConnect/libs"
-	"github.com/LidoHon/devConnect/models"
+	"github.com/LidoHon/CCTech/libs"
+	"github.com/LidoHon/CCTech/models"
 	"github.com/cloudinary/cloudinary-go/v2/api/uploader"
 	"github.com/gin-gonic/gin"
 )

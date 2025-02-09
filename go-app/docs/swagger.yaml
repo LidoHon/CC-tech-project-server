@@ -1,4 +1,150 @@
+basePath: /api
+definitions:
+  gin.H:
+    additionalProperties: {}
+    type: object
+  models.ImageInput:
+    properties:
+      base64String:
+        type: string
+      name:
+        type: string
+      type:
+        type: string
+    type: object
+  models.SignedUpUserOutput:
+    properties:
+      email:
+        type: string
+      id:
+        type: integer
+      refreshToken:
+        type: string
+      role:
+        type: string
+      token:
+        type: string
+      userName:
+        type: string
+    type: object
+  models.VerifyEmailResponse:
+    properties:
+      message:
+        type: string
+    type: object
+  requests.EmailVerifyRequest:
+    properties:
+      input:
+        properties:
+          user_id:
+            type: integer
+          verification_token:
+            type: string
+        required:
+        - user_id
+        - verification_token
+        type: object
+    type: object
+  requests.RegisterRequest:
+    properties:
+      input:
+        properties:
+          email:
+            type: string
+          image:
+            $ref: '#/definitions/models.ImageInput'
+          password:
+            minLength: 6
+            type: string
+          phone:
+            type: string
+          role:
+            type: string
+          userName:
+            type: string
+        required:
+        - email
+        - password
+        - phone
+        - userName
+        type: object
+    type: object
+host: localhost:5000
 info:
-  contact: {}
-paths: {}
+  contact:
+    email: support@devconnect.com
+    name: API Support
+  description: This is the API documentation for DevConnect.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: DevConnect API
+  version: "1.0"
+paths:
+  /users/register:
+    post:
+      consumes:
+      - application/json
+      description: Register a new user with the provided details
+      parameters:
+      - description: User registration details
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/requests.RegisterRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.SignedUpUserOutput'
+        "400":
+          description: Invalid input data
+          schema:
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/gin.H'
+      summary: Register a new user
+      tags:
+      - users
+  /users/verify-email:
+    post:
+      consumes:
+      - application/json
+      description: Verifies a user's email by checking the verification token and
+        updating the user's status.
+      parameters:
+      - description: User email verification request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/requests.EmailVerifyRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Email verified successfully
+          schema:
+            $ref: '#/definitions/models.VerifyEmailResponse'
+        "400":
+          description: Invalid input data
+          schema:
+            $ref: '#/definitions/gin.H'
+        "401":
+          description: Invalid or expired verification token
+          schema:
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/gin.H'
+      summary: Verify user email
+      tags:
+      - Authentication
 swagger: "2.0"

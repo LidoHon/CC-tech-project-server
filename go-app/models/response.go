@@ -9,12 +9,12 @@ type SignupResponse struct {
 }
 
 type SignedUpUserOutput struct {
-	ID           graphql.Int    `json:"id"`
-	UserName     graphql.String `json:"userName"`
-	Email        graphql.String `json:"email"`
-	Token        graphql.String `json:"token"`
-	RefreshToken graphql.String `json:"refreshToken"`
-	Role         graphql.String `json:"role"`
+	ID           int    `json:"id"`
+	UserName     string `json:"userName"`
+	Email        string `json:"email"`
+	Token        string `json:"token"`
+	RefreshToken string `json:"refreshToken"`
+	Role         string `json:"role"`
 }
 
 type UserResponse struct {
@@ -71,4 +71,9 @@ type UploadResponce struct {
 
 type UpdateProfileResponce struct {
 	Message graphql.String `json:"message"`
+}
+
+
+type VerifyEmailResponse struct{
+	Message string `json:"message"`
 }
