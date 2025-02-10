@@ -29,6 +29,8 @@ curl -X POST http://localhost:5000/api/users/login \
     "password": "newPassword"
   }
 }'
+
+
 curl -X POST http://192.168.0.40:5000/api/users/login \
 -H "Content-Type: application/json" \
 -d '{
@@ -40,14 +42,14 @@ curl -X POST http://192.168.0.40:5000/api/users/login \
 
 
 
-reset password request
+// reset password request
 
 curl -X POST http://localhost:5000/api/users/reset-password \
 -H "Content-Type: application/json" \
 -d '{"input": {"email": "getab2017@gmail.com"}}'
 
 
-update password
+// update password
 curl -X POST http://localhost:5000/api/users/update-password \
 -H "Content-Type: application/json" \
 -d '{
@@ -56,7 +58,7 @@ curl -X POST http://localhost:5000/api/users/update-password \
     "password": "Pass12345"
 }'
 
-account removal
+// account removal
 curl -X POST http://localhost:5000/api/users/delete \
 -H "Content-Type: application/json" \
 -d '{
@@ -74,7 +76,7 @@ curl -X POST http://localhost:5000/api/users/delete \
 }'
 
 
-update profile
+// update profile
 curl -X POST http://localhost:5000/api/users/update-profile -H "Content-Type: application/json" -d '{
   "userName": "lidoye",
   "phone": "1234567890",
@@ -82,18 +84,12 @@ curl -X POST http://localhost:5000/api/users/update-profile -H "Content-Type: ap
 }'
 
 
+//delete user
+curl -X DELETE "http://localhost:5000/api/users/delete" \
+     -H "Content-Type: application/json" \
+     -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+     -d '{"userID": 10}'
 
 
-// payment verification
- curl -X PUT "http://localhost:5000/api/rent/payment"      -H "Content-Type: application/json"      -d '{
-       "tx_ref": "rent-93",
-       "id": 2
-     }'
-
-
-mutation paymentver {
-  ProcessPayment(id: 24, tx_ref: "rent-116") {
-    message
-    status
-  }
-}
+//get all users
+  curl -X GET "http://localhost:5000/api/users" -H "Content-Type: application/json"

@@ -9,3 +9,42 @@ array_relationships:
         table:
           name: email_verification_tokens
           schema: public
+insert_permissions:
+  - role: user
+    permission:
+      check: {}
+      columns:
+        - is_email_verified
+        - email
+        - github_id
+        - google_id
+        - password
+        - phone
+        - profile
+        - role
+        - username
+        - id
+        - tokenId
+        - created_at
+        - updated_at
+    comment: ""
+update_permissions:
+  - role: user
+    permission:
+      columns:
+        - is_email_verified
+        - email
+        - github_id
+        - google_id
+        - password
+        - phone
+        - profile
+        - role
+        - username
+        - id
+        - tokenId
+        - created_at
+        - updated_at
+      filter: {}
+      check: null
+    comment: ""
