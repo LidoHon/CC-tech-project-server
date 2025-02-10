@@ -142,6 +142,12 @@ To generate or update the API documentation, run:
 swag init --parseDependency --parseInternal
 ```
 
+or just
+
+```sh
+swag init
+```
+
 - Then, open your browser and visit:
 
 ```sh
@@ -151,4 +157,3 @@ http://localhost:<port>/swagger/index.html#/
 Replace <port> with your actual server port.
 
 ![API Documentation](assets/images/api-docs.png)
-

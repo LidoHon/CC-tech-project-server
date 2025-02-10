@@ -791,7 +791,7 @@ var SwaggerInfo = &swag.Spec{
 	Host:             "localhost:5000",
 	BasePath:         "/api",
 	Schemes:          []string{},
-	Title:            "User API fro cc tech project",
+	Title:            "User API for cc tech project",
 	Description:      "This is the API documentation for user api.",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,

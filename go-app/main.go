@@ -20,7 +20,7 @@ import (
 
 var store *sessions.CookieStore
 
-// @title User API fro cc tech project
+// @title User API for cc tech project
 // @version 1.0
 // @description This is the API documentation for user api.
 // @termsOfService http://swagger.io/terms/
