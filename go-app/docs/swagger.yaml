@@ -3,6 +3,22 @@ definitions:
   gin.H:
     additionalProperties: {}
     type: object
+  models.AllUserResponse:
+    properties:
+      email:
+        type: string
+      id:
+        type: integer
+      username:
+        type: string
+    type: object
+  models.DeleteUserWithEmailResponse:
+    properties:
+      message:
+        type: string
+      status:
+        type: string
+    type: object
   models.ImageInput:
     properties:
       base64String:
@@ -39,7 +55,21 @@ definitions:
       userName:
         type: string
     type: object
+  models.SingleUserResponse:
+    properties:
+      email:
+        type: string
+      id:
+        type: integer
+      username:
+        type: string
+    type: object
   models.UpdatePasswordResponse:
+    properties:
+      message:
+        type: string
+    type: object
+  models.UpdateResponce:
     properties:
       message:
         type: string
@@ -64,6 +94,11 @@ definitions:
       message:
         type: string
     type: object
+  requests.DeleteUserWithIdInput:
+    properties:
+      userId:
+        type: integer
+    type: object
   requests.EmailVerifyRequest:
     properties:
       input:
@@ -75,6 +110,16 @@ definitions:
         required:
         - user_id
         - verification_token
+        type: object
+    type: object
+  requests.GetUserByIdInput:
+    properties:
+      input:
+        properties:
+          id:
+            type: integer
+        required:
+        - id
         type: object
     type: object
   requests.LoginRequest:
@@ -138,6 +183,26 @@ definitions:
         - userId
         type: object
     type: object
+  requests.UpdateRequest:
+    properties:
+      input:
+        properties:
+          image:
+            $ref: '#/definitions/models.ImageInput'
+          phone:
+            type: string
+          role:
+            type: string
+          userId:
+            type: integer
+          userName:
+            type: string
+        required:
+        - phone
+        - userId
+        - userName
+        type: object
+    type: object
 host: localhost:5000
 info:
   contact:
@@ -151,6 +216,65 @@ info:
   title: User API fro cc tech project
   version: "1.0"
 paths:
+  /users/all-users:
+    get:
+      consumes:
+      - application/json
+      description: Fetches a list of all users from the database.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of users
+          schema:
+            items:
+              $ref: '#/definitions/models.AllUserResponse'
+            type: array
+        "500":
+          description: Failed to query user data
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get all users
+      tags:
+      - Get all users
+  /users/delete:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes a user from the system using their user ID. If the deletion
+        is successful, an email is sent to confirm the account deletion. If the email
+        fails to send, the deletion is rolled back.
+      parameters:
+      - description: User ID to delete
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/requests.DeleteUserWithIdInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User deleted and email sent successfully
+          schema:
+            $ref: '#/definitions/models.DeleteUserWithEmailResponse'
+        "400":
+          description: Invalid input
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Failed to delete user, rollback attempted if necessary
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Delete a user
+      tags:
+      - delete user
   /users/login:
     post:
       consumes:
@@ -286,6 +410,75 @@ paths:
       summary: Reset password
       tags:
       - Reset Password
+  /users/update-profile:
+    put:
+      consumes:
+      - application/json
+      description: Update the profile details of a user, including username, phone,
+        profile picture, and role.
+      parameters:
+      - description: User profile update details
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/requests.UpdateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Profile updated successfully
+          schema:
+            $ref: '#/definitions/models.UpdateResponce'
+        "400":
+          description: Invalid input data
+          schema:
+            $ref: '#/definitions/gin.H'
+        "422":
+          description: Validation error
+          schema:
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/gin.H'
+      summary: Update user profile
+      tags:
+      - update user profile
+  /users/user:
+    post:
+      consumes:
+      - application/json
+      description: Fetches a user from the database using their unique ID.
+      parameters:
+      - description: User ID input
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/requests.GetUserByIdInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User details
+          schema:
+            $ref: '#/definitions/models.SingleUserResponse'
+        "400":
+          description: Invalid input
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Failed to query user data
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get user by ID
+      tags:
+      - Get user by ID
   /users/verify-email:
     post:
       consumes:

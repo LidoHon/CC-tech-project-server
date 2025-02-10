@@ -23,6 +23,93 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/users/all-users": {
+            "get": {
+                "description": "Fetches a list of all users from the database.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Get all users"
+                ],
+                "summary": "Get all users",
+                "responses": {
+                    "200": {
+                        "description": "List of users",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.AllUserResponse"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to query user data",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/users/delete": {
+            "delete": {
+                "description": "Deletes a user from the system using their user ID. If the deletion is successful, an email is sent to confirm the account deletion. If the email fails to send, the deletion is rolled back.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "delete user"
+                ],
+                "summary": "Delete a user",
+                "parameters": [
+                    {
+                        "description": "User ID to delete",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/requests.DeleteUserWithIdInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "User deleted and email sent successfully",
+                        "schema": {
+                            "$ref": "#/definitions/models.DeleteUserWithEmailResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to delete user, rollback attempted if necessary",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/users/login": {
             "post": {
                 "description": "Authenticates a user with email and password, returning access and refresh tokens",
@@ -225,6 +312,110 @@ const docTemplate = `{
                 }
             }
         },
+        "/users/update-profile": {
+            "put": {
+                "description": "Update the profile details of a user, including username, phone, profile picture, and role.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "update user profile"
+                ],
+                "summary": "Update user profile",
+                "parameters": [
+                    {
+                        "description": "User profile update details",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/requests.UpdateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Profile updated successfully",
+                        "schema": {
+                            "$ref": "#/definitions/models.UpdateResponce"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input data",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/user": {
+            "post": {
+                "description": "Fetches a user from the database using their unique ID.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Get user by ID"
+                ],
+                "summary": "Get user by ID",
+                "parameters": [
+                    {
+                        "description": "User ID input",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/requests.GetUserByIdInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "User details",
+                        "schema": {
+                            "$ref": "#/definitions/models.SingleUserResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to query user data",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/users/verify-email": {
             "post": {
                 "description": "Verifies a user's email by checking the verification token and updating the user's status.",
@@ -283,6 +474,31 @@ const docTemplate = `{
             "type": "object",
             "additionalProperties": {}
         },
+        "models.AllUserResponse": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.DeleteUserWithEmailResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                }
+            }
+        },
         "models.ImageInput": {
             "type": "object",
             "properties": {
@@ -339,7 +555,29 @@ const docTemplate = `{
                 }
             }
         },
+        "models.SingleUserResponse": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
         "models.UpdatePasswordResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.UpdateResponce": {
             "type": "object",
             "properties": {
                 "message": {
@@ -378,6 +616,14 @@ const docTemplate = `{
                 }
             }
         },
+        "requests.DeleteUserWithIdInput": {
+            "type": "object",
+            "properties": {
+                "userId": {
+                    "type": "integer"
+                }
+            }
+        },
         "requests.EmailVerifyRequest": {
             "type": "object",
             "properties": {
@@ -393,6 +639,22 @@ const docTemplate = `{
                         },
                         "verification_token": {
                             "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "requests.GetUserByIdInput": {
+            "type": "object",
+            "properties": {
+                "input": {
+                    "type": "object",
+                    "required": [
+                        "id"
+                    ],
+                    "properties": {
+                        "id": {
+                            "type": "integer"
                         }
                     }
                 }
@@ -485,6 +747,36 @@ const docTemplate = `{
                         },
                         "userId": {
                             "type": "integer"
+                        }
+                    }
+                }
+            }
+        },
+        "requests.UpdateRequest": {
+            "type": "object",
+            "properties": {
+                "input": {
+                    "type": "object",
+                    "required": [
+                        "phone",
+                        "userId",
+                        "userName"
+                    ],
+                    "properties": {
+                        "image": {
+                            "$ref": "#/definitions/models.ImageInput"
+                        },
+                        "phone": {
+                            "type": "string"
+                        },
+                        "role": {
+                            "type": "string"
+                        },
+                        "userId": {
+                            "type": "integer"
+                        },
+                        "userName": {
+                            "type": "string"
                         }
                     }
                 }

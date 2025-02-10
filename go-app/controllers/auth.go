@@ -20,7 +20,6 @@ import (
 
 var validate = validator.New()
 
-
 // RegisterUser godoc
 // @Summary Register a new user
 // @Description Register a new user with the provided details
@@ -109,7 +108,7 @@ func RegisterUser() gin.HandlerFunc {
 			"password": graphql.String(password),
 			"phone":    graphql.String(request.Input.Phone),
 			"profile":  graphql.String(profilePictureURL),
-			"role": graphql.String(request.Input.Role + "user"),
+			"role":     graphql.String(request.Input.Role + "user"),
 		}
 		err := client.Mutate(context.Background(), &mutation, mutationVariables)
 		if err != nil {
@@ -345,7 +344,6 @@ func VerifyEmail() gin.HandlerFunc {
 		c.JSON(http.StatusOK, res)
 	}
 }
-
 
 // Login handles user authentication
 // @Summary User login
@@ -719,17 +717,18 @@ func DeleteUser() gin.HandlerFunc {
 	}
 }
 
-// @Summary Update User Profile
-// @Description Updates a user's profile information.
-// @Tags User
+// UpdateProfile godoc
+// @Summary Update user profile
+// @Description Update the profile details of a user, including username, phone, profile picture, and role.
+// @Tags update user profile
 // @Accept json
 // @Produce json
-// @Param UpdateRequest body requests.UpdateRequest true "User profile update request"
-// @Success 200 {object} gin.H { "message": "Profile updated successfully" }
-// @Failure 400 {object} gin.H { "message": "invalid input", "details": "Error details" }
-// @Failure 422 {object} gin.H { "updateProfile": "Validation error details" }
-// @Failure 500 {object} gin.H { "message": "Failed to update user profile", "details": "Error details" }
-// @Router /profile/update [put]
+// @Param input body requests.UpdateRequest true "User profile update details"
+// @Success 200 {object} models.UpdateResponce "Profile updated successfully"
+// @Failure 400 {object} gin.H "Invalid input data"
+// @Failure 422 {object} gin.H "Validation error"
+// @Failure 500 {object} gin.H "Internal server error"
+// @Router /users/update-profile [put]
 func UpdateProfile() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		client := libs.SetupGraphqlClient()
@@ -770,7 +769,7 @@ func UpdateProfile() gin.HandlerFunc {
 			}
 
 			queryVars := map[string]interface{}{
-			"userId":	graphql.Int(req.Input.UserId),
+				"userId": graphql.Int(req.Input.UserId),
 			}
 
 			err := client.Query(context.Background(), &query, queryVars)
@@ -778,19 +777,17 @@ func UpdateProfile() gin.HandlerFunc {
 				log.Println("Error fetching existing role:", err)
 			}
 
-			
 			log.Println("Query response to check role:", query.Users)
 
 			if len(query.Users) > 0 && query.Users[0].Role != nil {
 				roleToUse = *query.Users[0].Role
 				log.Println("Fetched Role from DB:", roleToUse)
 			} else {
-				roleToUse = "user" 
+				roleToUse = "user"
 			}
 		}
 
 		log.Println("Final Role to Use:", roleToUse)
-
 
 		if proPicUrl == "" {
 			var mutation struct {
@@ -803,7 +800,7 @@ func UpdateProfile() gin.HandlerFunc {
 				"userId":   graphql.Int(req.Input.UserId),
 				"userName": graphql.String(req.Input.UserName),
 				"Phone":    graphql.String(req.Input.Phone),
-				"Role": 	graphql.String(roleToUse),
+				"Role":     graphql.String(roleToUse),
 			}
 
 			err := client.Mutate(context.Background(), &mutation, mutationVars)
@@ -829,7 +826,7 @@ func UpdateProfile() gin.HandlerFunc {
 				"userName": graphql.String(req.Input.UserName),
 				"Phone":    graphql.String(req.Input.Phone),
 				"Profile":  graphql.String(proPicUrl),
-				"Role": 	graphql.String(req.Input.Role),
+				"Role":     graphql.String(req.Input.Role),
 			}
 
 			err := client.Mutate(context.Background(), &mutation, mutationVars)
@@ -849,12 +846,24 @@ func UpdateProfile() gin.HandlerFunc {
 
 }
 
+
+// DeleteUserById deletes a user by their ID.
+// @Summary Delete a user
+// @Description Deletes a user from the system using their user ID. If the deletion is successful, an email is sent to confirm the account deletion. If the email fails to send, the deletion is rolled back.
+// @Tags delete user
+// @Accept json
+// @Produce json
+// @Param request body requests.DeleteUserWithIdInput true "User ID to delete"
+// @Success 200 {object} models.DeleteUserWithEmailResponse "User deleted and email sent successfully"
+// @Failure 400 {object} map[string]string "Invalid input"
+// @Failure 500 {object} map[string]string "Failed to delete user, rollback attempted if necessary"
+// @Router /users/delete [delete]
 func DeleteUserById() gin.HandlerFunc {
 	return func(c *gin.Context) {
 
 		client := libs.SetupGraphqlClient()
 
-		var input requests.DeleteUserWithEmailInput
+		var input requests.DeleteUserWithIdInput
 		if err := c.ShouldBindBodyWithJSON(&input); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid input", "details": err.Error()})
 			return
@@ -930,12 +939,11 @@ func DeleteUserById() gin.HandlerFunc {
 	}
 }
 
-
 func UpdateProfilePicture() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		client := libs.SetupGraphqlClient()
 
-		var req requests.UpdateProfileImage 
+		var req requests.UpdateProfileImage
 
 		if err := c.ShouldBindJSON(&req); err != nil {
 			fmt.Printf("Error from JSON bind: %v", err)
@@ -981,7 +989,16 @@ func UpdateProfilePicture() gin.HandlerFunc {
 	}
 }
 
-func GetAllUsers() gin.HandlerFunc{
+// GetAllUsers retrieves all users.
+// @Summary Get all users
+// @Description Fetches a list of all users from the database.
+// @Tags Get all users
+// @Accept json
+// @Produce json
+// @Success 200 {array} models.AllUserResponse "List of users"
+// @Failure 500 {object} map[string]string "Failed to query user data"
+// @Router /users/all-users [get]
+func GetAllUsers() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		client := libs.SetupGraphqlClient()
 
@@ -997,12 +1014,31 @@ func GetAllUsers() gin.HandlerFunc{
 			c.JSON(http.StatusInternalServerError, gin.H{"message": "Failed to query user data", "details": err.Error()})
 			return
 		}
+		// Convert query.Users to AllUserResponse format
+		var response []models.AllUserResponse
+		for _, user := range query.Users {
+			response = append(response, models.AllUserResponse{
+				ID:       int(user.ID),
+				UserName: string(user.UserName),
+				Email:    string(user.Email),
+			})
+		}
 
-		c.JSON(http.StatusOK, query.Users)
-	}	
+		c.JSON(http.StatusOK, response)
+	}
 }
 
-
+// GetUserById retrieves a user by their ID.
+// @Summary Get user by ID
+// @Description Fetches a user from the database using their unique ID.
+// @Tags Get user by ID
+// @Accept json
+// @Produce json
+// @Param request body requests.GetUserByIdInput true "User ID input"
+// @Success 200 {object} models.SingleUserResponse "User details"
+// @Failure 400 {object} map[string]string "Invalid input"
+// @Failure 500 {object} map[string]string "Failed to query user data"
+// @Router /users/user [post]
 func GetUserById() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		client := libs.SetupGraphqlClient()
@@ -1030,6 +1066,11 @@ func GetUserById() gin.HandlerFunc {
 			return
 		}
 
-		c.JSON(http.StatusOK, query.User)
+		response := models.SingleUserResponse{
+			ID: int(query.User.ID),
+			UserName: string(query.User.UserName),
+			Email: string(query.User.Email),
+		}
+		c.JSON(http.StatusOK, response)
 	}
 }

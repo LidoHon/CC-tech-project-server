@@ -31,50 +31,50 @@ var store *sessions.CookieStore
 // @host localhost:5000
 // @BasePath /api
 func main() {
-    err := godotenv.Load(`../.env`)
-    if err != nil {
-        fmt.Println("error loading environment variables", err)
-    }
-    port := os.Getenv("PORT")
-    if port == "" {
-        port = "5000"
-    }
+	err := godotenv.Load(`../.env`)
+	if err != nil {
+		fmt.Println("error loading environment variables", err)
+	}
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "5000"
+	}
 
-    // Load session secret from environment variable
-    sessionSecret := os.Getenv("SESSION_SECRET")
-    if sessionSecret == "" {
-        log.Fatal("SESSION_SECRET is not set in environment variables")
-        sessionSecret = "secret"
-    }
+	// Load session secret from environment variable
+	sessionSecret := os.Getenv("SESSION_SECRET")
+	if sessionSecret == "" {
+		log.Fatal("SESSION_SECRET is not set in environment variables")
+		sessionSecret = "secret"
+	}
 
-    // Assign the session store to `gothic` using the session secret
-    store = sessions.NewCookieStore([]byte(sessionSecret))
-    gothic.Store = store
+	// Assign the session store to `gothic` using the session secret
+	store = sessions.NewCookieStore([]byte(sessionSecret))
+	gothic.Store = store
 
-    router := gin.New()
-    router.Use(gin.Logger())
+	router := gin.New()
+	router.Use(gin.Logger())
 
-    // Configure Google OAuth
-    goth.UseProviders(
-        google.New(
-            os.Getenv("GOOGLE_CLIENT_ID"),
-            os.Getenv("GOOGLE_CLIENT_SECRET"),
-            "http://localhost:"+port+"/auth/google/callback",
-            "email", "profile",
-        ),
-        github.New(
-            os.Getenv("GITHUB_CLIENT_ID"),
-            os.Getenv("GITHUB_CLIENT_SECRET"),
-            "http://localhost:"+port+"/auth/github/callback",
-        ),
-    )
+	// Configure Google OAuth
+	goth.UseProviders(
+		google.New(
+			os.Getenv("GOOGLE_CLIENT_ID"),
+			os.Getenv("GOOGLE_CLIENT_SECRET"),
+			"http://localhost:"+port+"/auth/google/callback",
+			"email", "profile",
+		),
+		github.New(
+			os.Getenv("GITHUB_CLIENT_ID"),
+			os.Getenv("GITHUB_CLIENT_SECRET"),
+			"http://localhost:"+port+"/auth/github/callback",
+		),
+	)
 
-    routes.RegisterRoutes(router)
+	routes.RegisterRoutes(router)
 
-    // Serve Swagger UI
-    router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	// Serve Swagger UI
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
-    fmt.Printf("Server running on port %s", port)
+	fmt.Printf("Server running on port %s", port)
 
-    router.Run(":" + port)
+	router.Run(":" + port)
 }

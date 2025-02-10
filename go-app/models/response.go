@@ -73,7 +73,19 @@ type UpdateProfileResponce struct {
 	Message graphql.String `json:"message"`
 }
 
-
-type VerifyEmailResponse struct{
+type VerifyEmailResponse struct {
 	Message string `json:"message"`
 }
+
+
+type AllUserResponse struct {
+    ID       int    `json:"id"`
+    UserName string `json:"username"`
+    Email    string `json:"email"`
+}
+type SingleUserResponse struct {
+    ID       int    `json:"id"`
+    UserName string `json:"username"`
+    Email    string `json:"email"`
+}
+

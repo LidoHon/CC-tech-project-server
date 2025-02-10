@@ -31,8 +31,8 @@ type LoginRequest struct {
 	} `json:"input"`
 }
 
-type GetUserByIdInput struct{
-	Input struct{
+type GetUserByIdInput struct {
+	Input struct {
 		UserID int `json:"id" validate:"required"`
 	}
 }
@@ -117,7 +117,7 @@ type DeleteUserRequest struct {
 	}
 }
 
-type DeleteUserWithEmailInput struct {
+type DeleteUserWithIdInput struct {
 	UserID int `json:"userId"`
 }
 

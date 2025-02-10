@@ -130,7 +130,9 @@ func AuthRoutes(incomingRoutes *gin.Engine) {
 		userRoutes.POST("/update-password", controllers.UpdatePassword())
 		userRoutes.POST("/delete", controllers.DeleteUser())
 		userRoutes.PUT("/update-profile", middlewares.ImageUpload(), controllers.UpdateProfile())
-		userRoutes.DELETE("/delete/:id", controllers.DeleteUserById())
+		userRoutes.DELETE("/delete", controllers.DeleteUserById())
+		userRoutes.GET("/all-users", controllers.GetAllUsers())
+		userRoutes.POST("/user", controllers.GetUserById())
 
 	}
 }
