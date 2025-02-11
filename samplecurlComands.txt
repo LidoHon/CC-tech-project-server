@@ -92,4 +92,7 @@ curl -X DELETE "http://localhost:5000/api/users/delete" \
 
 
 //get all users
-  curl -X GET "http://localhost:5000/api/users" -H "Content-Type: application/json"
+  curl -X GET "http://localhost:5000/api/users/all-users" -H "Content-Type: application/json"
+
+
+  curl -X GET "http://192.168.48.4:5000/api/users/all-users" -H "Content-Type: application/json"

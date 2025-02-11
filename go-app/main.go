@@ -31,7 +31,7 @@ var store *sessions.CookieStore
 // @host localhost:5000
 // @BasePath /api
 func main() {
-	err := godotenv.Load(`../.env`)
+	err := godotenv.Load(`.env`)
 	if err != nil {
 		fmt.Println("error loading environment variables", err)
 	}
