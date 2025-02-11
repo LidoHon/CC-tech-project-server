@@ -1,6 +1,6 @@
-# Book Renting App
+# CC Tech Internship Project Backend
 
-This is a **Project** developed for the **CC-Tech** internship **entrance test**. The backend is developed using **Golang**, **PostgreSQL**, and **Hasura GraphQL**, and runs with **Docker**.
+This is a **Project** developed for the **CC-Tech**  **internship**. The backend is developed using **Golang**, **PostgreSQL**, and **Hasura GraphQL**, and runs with **Docker**.
 
 ## Features
 
@@ -155,5 +155,7 @@ http://localhost:<port>/swagger/index.html#/
 ```
 
 Replace <port> with your actual server port.
+
+## API Documentation
 
 ![API Documentation](assets/images/api-docs.png)

@@ -61,14 +61,6 @@ type ErrorResponse struct {
 	Details string `json:"details,omitempty"`
 }
 
-type UpdatedBookOutput struct {
-	Message graphql.String `json:"message"`
-}
-
-type UploadResponce struct {
-	Url graphql.String `json:"url"`
-}
-
 type UpdateProfileResponce struct {
 	Message graphql.String `json:"message"`
 }
@@ -77,15 +69,13 @@ type VerifyEmailResponse struct {
 	Message string `json:"message"`
 }
 
-
 type AllUserResponse struct {
-    ID       int    `json:"id"`
-    UserName string `json:"username"`
-    Email    string `json:"email"`
+	ID       int    `json:"id"`
+	UserName string `json:"username"`
+	Email    string `json:"email"`
 }
 type SingleUserResponse struct {
-    ID       int    `json:"id"`
-    UserName string `json:"username"`
-    Email    string `json:"email"`
+	ID       int    `json:"id"`
+	UserName string `json:"username"`
+	Email    string `json:"email"`
 }
-

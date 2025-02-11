@@ -846,7 +846,6 @@ func UpdateProfile() gin.HandlerFunc {
 
 }
 
-
 // DeleteUserById deletes a user by their ID.
 // @Summary Delete a user
 // @Description Deletes a user from the system using their user ID. If the deletion is successful, an email is sent to confirm the account deletion. If the email fails to send, the deletion is rolled back.
@@ -1067,9 +1066,9 @@ func GetUserById() gin.HandlerFunc {
 		}
 
 		response := models.SingleUserResponse{
-			ID: int(query.User.ID),
+			ID:       int(query.User.ID),
 			UserName: string(query.User.UserName),
-			Email: string(query.User.Email),
+			Email:    string(query.User.Email),
 		}
 		c.JSON(http.StatusOK, response)
 	}
